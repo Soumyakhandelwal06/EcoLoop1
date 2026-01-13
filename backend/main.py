@@ -24,6 +24,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Helpers ---
+
+def update_user_streak(user: models.User, db: Session):
+    """
+    Updates the user's streak based on the last_login date.
+    Should be called during login and task completion.
+    """
+    today = date.today()
+    if user.last_login != today:
+        if user.last_login == today - timedelta(days=1):
+            user.streak += 1
+        else:
+            user.streak = 1 # Reset if missed a day or first login after registration
+        user.last_login = today
+        db.commit()
+
 # --- Authentication Routes ---
 
 @app.post("/register", response_model=schemas.Token)
@@ -42,7 +58,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     
     # Create User
     hashed_pwd = auth.get_password_hash(user.password)
-    new_user = models.User(username=user.username, email=user.email, hashed_password=hashed_pwd)
+    new_user = models.User(
+        username=user.username, 
+        email=user.email, 
+        hashed_password=hashed_pwd,
+        streak=1,
+        last_login=date.today()
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -68,14 +90,7 @@ def login(user_credentials: schemas.UserLogin, db: Session = Depends(database.ge
         raise HTTPException(status_code=400, detail="Invalid Credentials")
         
     # --- Streak Logic ---
-    today = date.today()
-    if user.last_login != today:
-        if user.last_login == today - timedelta(days=1):
-            user.streak += 1
-        else:
-            user.streak = 1 # Reset if missed a day or first login
-        user.last_login = today
-        db.commit()
+    update_user_streak(user, db)
     
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
@@ -90,8 +105,9 @@ def update_progress(
     db: Session = Depends(database.get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    # 1. Update User Coins
+    # 1. Update User Coins & Streak
     current_user.coins += progress_data.coins_earned
+    update_user_streak(current_user, db)
     
     # 2. Check/Update UserProgress for this Level
     user_progress = db.query(models.UserProgress).filter(
