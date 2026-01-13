@@ -39,6 +39,13 @@ async def verify_image_content(image_file: bytes, task_tag: str) -> dict:
         
         response = model.generate_content([prompt, image])
         
+        if not response or not hasattr(response, 'text'):
+             return {
+                "is_valid": False,
+                "message": "AI could not process this image. Please try a clearer photo.",
+                "confidence": 0.0
+            }
+
         # Parse text response (Naive parsing, expecting JSON-like structure or just simple text if JSON fails)
         text = response.text.replace('```json', '').replace('```', '').strip()
         
@@ -49,7 +56,7 @@ async def verify_image_content(image_file: bytes, task_tag: str) -> dict:
             return {
                 "is_valid": result.get("valid", False),
                 "message": result.get("reason", "Analysis complete."),
-                "confidence": 0.95 # Gemini doesn't always give a confidence score easily in this mode, mocking high confidence.
+                "confidence": 0.95 
             }
         except json.JSONDecodeError:
             # Fallback if response isn't perfect JSON
@@ -61,9 +68,11 @@ async def verify_image_content(image_file: bytes, task_tag: str) -> dict:
             }
 
     except Exception as e:
-        print(f"Gemini Error: {e}")
+        import traceback
+        traceback.print_exc() # Log to console
+        print(f"Gemini Error Details: {e}")
         return {
             "is_valid": False, 
-            "message": "AI Error. Please try again.", 
+            "message": f"AI Error: {str(e)}", 
             "confidence": 0.0
         }

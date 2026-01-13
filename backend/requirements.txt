@@ -7,3 +7,5 @@ python-multipart
 transformers
 torch
 pillow
+google-generativeai
+python-dotenv

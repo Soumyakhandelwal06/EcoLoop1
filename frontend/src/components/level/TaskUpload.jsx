@@ -38,7 +38,7 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
             setResult(null); // Clear previous result
             
             // Call Gemini API via Backend
-            const res = await verifyTask(selectedFile, "sustainable content (waste bins, nature, eco-friendly)");
+            const res = await verifyTask(selectedFile, taskDescription || "sustainable content (waste bins, nature, eco-friendly)");
             
             setVerifying(false);
             setResult(res);
