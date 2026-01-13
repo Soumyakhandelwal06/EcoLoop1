@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from . import models, schemas, database, auth, ai_service
@@ -24,21 +24,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"message": "EcoLoop API is running", "docs": "/docs"}
+
 # --- Helpers ---
 
 def update_user_streak(user: models.User, db: Session):
     """
-    Updates the user's streak based on the last_login date.
-    Should be called during login and task completion.
+    Updates the user's streak based on the date of the last action.
+    Should be called ONLY during task completion.
     """
     today = date.today()
-    if user.last_login != today:
+    if user.last_login is None:
+        # First task ever
+        user.streak = 1
+    elif user.last_login != today:
         if user.last_login == today - timedelta(days=1):
             user.streak += 1
         else:
-            user.streak = 1 # Reset if missed a day or first login after registration
-        user.last_login = today
-        db.commit()
+            # Reset if they haven't completed a task since yesterday
+            user.streak = 1
+    
+    # If user.last_login == today, we don't increment multiple times
+    user.last_login = today
+    db.commit()
 
 # --- Authentication Routes ---
 
@@ -62,8 +72,8 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
         username=user.username, 
         email=user.email, 
         hashed_password=hashed_pwd,
-        streak=1,
-        last_login=date.today()
+        streak=0,
+        last_login=None
     )
     db.add(new_user)
     db.commit()
@@ -83,7 +93,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
         new_progress = models.UserProgress(
             user_id=new_user.id,
             level_id=level1.id,
-            status="UNLOCKED",
+            status="unlocked",
             score=0
         )
         db.add(new_progress)
@@ -103,8 +113,8 @@ def login(user_credentials: schemas.UserLogin, db: Session = Depends(database.ge
     if not auth.verify_password(user_credentials.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid Credentials")
         
-    # --- Streak Logic ---
-    update_user_streak(user, db)
+    # Login no longer updates streak to ensure it's task-based
+    # update_user_streak(user, db)
     
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
@@ -130,17 +140,39 @@ def update_progress(
     ).first()
     
     if user_progress:
-        if user_progress.status != "COMPLETED":
-             user_progress.status = "COMPLETED"
+        if user_progress.status != "completed":
+             user_progress.status = "completed"
              user_progress.score = max(user_progress.score, progress_data.xp_earned) 
     else:
-        new_progress = models.UserProgress(
+        user_progress = models.UserProgress(
             user_id=current_user.id,
             level_id=progress_data.level_id,
-            status="COMPLETED",
+            status="completed",
             score=progress_data.xp_earned
         )
-        db.add(new_progress)
+        db.add(user_progress)
+    
+    # 3. Unlock Next Level
+    current_level = db.query(models.Level).filter(models.Level.id == progress_data.level_id).first()
+    if current_level:
+        next_level = db.query(models.Level).filter(models.Level.order == current_level.order + 1).first()
+        if next_level:
+            # Check if next level progress already exists
+            next_progress = db.query(models.UserProgress).filter(
+                models.UserProgress.user_id == current_user.id,
+                models.UserProgress.level_id == next_level.id
+            ).first()
+            
+            if not next_progress:
+                next_progress = models.UserProgress(
+                    user_id=current_user.id,
+                    level_id=next_level.id,
+                    status="unlocked",
+                    score=0
+                )
+                db.add(next_progress)
+            elif next_progress.status == "locked":
+                next_progress.status = "unlocked"
         
     db.commit()
     db.refresh(current_user)
@@ -162,10 +194,12 @@ def get_leaderboard(db: Session = Depends(database.get_db)):
 @app.post("/verify-task")
 async def verify_task(
     file: UploadFile = File(...), 
-    task_label: str = "nature conservation",
+    task_label: str = Form("nature conservation"),
     db: Session = Depends(database.get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
+    print(f"DEBUG: Verifying task for {current_user.username}")
+    print(f"DEBUG: Task Label received: {task_label}")
     content = await file.read()
     result = await ai_service.verify_image_content(content, task_label)
     return result

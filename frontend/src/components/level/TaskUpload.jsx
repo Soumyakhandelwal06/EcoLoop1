@@ -97,7 +97,7 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
                 {verifying ? (
                     <div className="flex flex-col items-center">
                         <Loader className="w-16 h-16 text-blue-500 animate-spin mb-4" />
-                        <h3 className="text-xl font-bold text-blue-600">Gemini AI is Analyzing...</h3>
+                        <h3 className="text-xl font-bold text-blue-600">AI is Analyzing...</h3>
                         <p className="text-sm text-gray-500">Checking your submission...</p>
                     </div>
                 ) : result?.is_valid === false ? (
@@ -122,7 +122,7 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
             
             <div className="mt-8 bg-blue-50 p-4 rounded-xl text-sm text-blue-800 flex items-start gap-2">
                 <span>ℹ️</span>
-                <p>Powered by Google Gemini AI. Please upload a clear image relevant to the task.</p>
+                <p>Powered by AI. Please upload a clear image relevant to the task.</p>
             </div>
         </div>
     );

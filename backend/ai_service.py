@@ -24,7 +24,7 @@ async def verify_image_content(image_file: bytes, task_tag: str) -> dict:
         }
 
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         # Prepare the prompt based on the task
         prompt = f"Analyze this image. Does it show {task_tag}? Answer ONLY with a JSON object: {{ 'valid': boolean, 'reason': string }}."

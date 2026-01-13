@@ -129,10 +129,11 @@ export const GameProvider = ({ children }) => {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const res = await api.post('/verify-task', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Authorization': `Bearer ${token}`
+                }
             });
             return res.data; // { is_valid: boolean, message: string, confidence: number }
         } catch (err) {

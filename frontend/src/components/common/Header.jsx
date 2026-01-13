@@ -16,7 +16,7 @@ const Header = () => {
     const isLoggedIn = !!user;
 
     return (
-        <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm px-6 py-4 flex justify-between items-center rounded-b-3xl mx-4 mt-2 mb-6">
+        <header className="bg-white sticky top-0 z-50 shadow-sm px-6 py-4 flex justify-between items-center rounded-b-3xl mx-4 mt-2 mb-6">
             <Link to={isLoggedIn ? "/dashboard" : "/"} className="flex items-center gap-2 group">
                 <Leaf className="text-green-600 w-8 h-8 group-hover:rotate-12 transition-transform" />
                 <span className="font-extrabold text-xl text-green-800 tracking-tight">EcoLoop</span>
