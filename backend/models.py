@@ -34,6 +34,7 @@ class Level(Base):
     xp_reward = Column(Integer, default=100) # Coins reward
     theme_id = Column(String)   # 'forest', 'river' etc. for frontend map matching
     video_id = Column(String, default="dQw4w9WgXcQ") # YouTube Video ID
+    task_description = Column(String, default="Upload a photo proving you completed the eco-task!")
 
     # Relationships
     user_progress = relationship("UserProgress", back_populates="level")

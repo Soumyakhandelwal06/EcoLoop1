@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Camera, Upload, Check, Loader, XCircle } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 
-const TaskUpload = ({ onVerify }) => {
+const TaskUpload = ({ onVerify, taskDescription }) => {
     const [file, setFile] = useState(null);
     const [verifying, setVerifying] = useState(false);
     const [verified, setVerified] = useState(false);
@@ -81,7 +81,9 @@ const TaskUpload = ({ onVerify }) => {
             <h2 className="text-2xl font-bold text-green-800 mb-2 flex items-center gap-2">
                 <Camera className="w-8 h-8"/> Daily Task
             </h2>
-            <p className="text-gray-600 mb-8">Upload a photo to complete this level!</p>
+            <p className="text-gray-600 mb-8 font-medium text-lg bg-green-50 p-4 rounded-xl border border-green-200">
+                {taskDescription || "Upload a photo proving you completed the eco-task!"}
+            </p>
 
             <div className={`border-4 border-dashed rounded-3xl p-10 text-center transition cursor-pointer relative group ${result?.is_valid === false ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-green-400 hover:bg-green-50'}`}>
                 <input 

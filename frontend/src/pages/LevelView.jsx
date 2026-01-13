@@ -80,7 +80,7 @@ const LevelView = () => {
                 <div className="mt-8 transition-all duration-500 ease-in-out">
                     {step === 'video' && <VideoPlayer onComplete={handleVideoComplete} levelData={levelData} />}
                     {step === 'quiz' && <QuizInterface onPass={handleQuizPass} questions={levelData.questions} />}
-                    {step === 'task' && <TaskUpload onVerify={handleTaskVerified} />}
+                    {step === 'task' && <TaskUpload onVerify={handleTaskVerified} taskDescription={levelData.task_description} />}
                 </div>
             </main>
         </div>

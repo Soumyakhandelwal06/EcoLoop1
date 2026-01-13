@@ -28,6 +28,9 @@ app.add_middleware(
 
 @app.post("/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    # Normalize username to lowercase
+    user.username = user.username.lower()
+
     # Check if user exists
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
@@ -54,6 +57,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
 
 @app.post("/login", response_model=schemas.Token)
 def login(user_credentials: schemas.UserLogin, db: Session = Depends(database.get_db)):
+    # Normalize username
+    user_credentials.username = user_credentials.username.lower()
+    
     user = db.query(models.User).filter(models.User.username == user_credentials.username).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid Credentials")
@@ -136,11 +142,11 @@ def seed_data(db: Session = Depends(database.get_db)):
         return {"message": "Data already seeded"}
     
     levels_data = [
-        {"title": "Green Forest", "description": "Save the trees!", "order": 1, "theme_id": "forest", "xp_reward": 100, "video_id": "J1Gg3A9hVl0"}, # What is Deforestation?
-        {"title": "Clean River", "description": "Keep waters blue.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "Om42Lppkd9w"}, # Water Pollution (Dr Binocs)
-        {"title": "Eco City", "description": "Urban sustainability.", "order": 3, "theme_id": "city", "xp_reward": 200, "video_id": "VlRPA1h5F40"}, # Sustainable Cities
-        {"title": "Windy Peak", "description": "Renewable energy.", "order": 4, "theme_id": "mountain", "xp_reward": 250, "video_id": "RnvCbquYeIM"}, # Renewable Energy
-        {"title": "Space Station", "description": "Future of earth.", "order": 5, "theme_id": "sky", "xp_reward": 500, "video_id": "KoGgqC6S71Y"}, # Climate Change from Space
+        {"title": "Green Forest", "description": "Save the trees!", "order": 1, "theme_id": "forest", "xp_reward": 100, "video_id": "Ic-J6hcSKa8", "task_description": "Find a tree or plant and take a photo to show you appreciate nature!"}, # Deforestation Dr Binocs
+        {"title": "Clean River", "description": "Keep waters blue.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "Om42Lppkd9w", "task_description": "Take a photo of you using a reusable water bottle!"}, # Water Pollution (Dr Binocs)
+        {"title": "Eco City", "description": "Urban sustainability.", "order": 3, "theme_id": "city", "xp_reward": 200, "video_id": "VlRPA1h5F40", "task_description": "Take a photo of a recycling bin or segregated waste."}, # Sustainable Cities
+        {"title": "Windy Peak", "description": "Renewable energy.", "order": 4, "theme_id": "mountain", "xp_reward": 250, "video_id": "RnvCbquYeIM", "task_description": "Take a photo of a bicycle or walking path (eco-transport)."}, # Renewable Energy
+        {"title": "Space Station", "description": "Future of earth.", "order": 5, "theme_id": "sky", "xp_reward": 500, "video_id": "KoGgqC6S71Y", "task_description": "Take a clear photo of the sky (aim for clean air!)."}, # Climate Change from Space
     ]
     
     for l in levels_data:

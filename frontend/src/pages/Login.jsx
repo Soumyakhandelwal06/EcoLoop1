@@ -11,24 +11,32 @@ const Login = () => {
         password: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login, register } = useGame();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
         
-        let res;
-        if (isLogin) {
-            res = await login(formData.username, formData.password);
-        } else {
-            res = await register(formData.username, formData.email, formData.password);
-        }
+        try {
+            let res;
+            if (isLogin) {
+                res = await login(formData.username, formData.password);
+            } else {
+                res = await register(formData.username, formData.email, formData.password);
+            }
 
-        if (res.success) {
-            navigate('/dashboard');
-        } else {
-            setError(res.error || "Authentication failed");
+            if (res.success) {
+                navigate('/dashboard');
+            } else {
+                setError(res.error || "Authentication failed. Server might be down.");
+            }
+        } catch (err) {
+            setError("Unexpected error occurred.");
+        } finally {
+            setLoading(false);
         }
     };
     
@@ -95,9 +103,15 @@ const Login = () => {
 
                     <button 
                         type="submit"
-                        className="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all text-lg"
+                        disabled={loading}
+                        className={`w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all text-lg ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
-                        {isLogin ? 'LOGIN' : 'SIGN UP'}
+                        {loading ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Wait...</span>
+                            </div>
+                        ) : (isLogin ? 'LOGIN' : 'SIGN UP')}
                     </button>
                 </form>
 

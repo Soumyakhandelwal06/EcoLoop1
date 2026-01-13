@@ -27,6 +27,7 @@ class LevelBase(BaseModel):
     xp_reward: int
     theme_id: str
     video_id: str
+    task_description: str
 
 class QuestionBase(BaseModel):
     text: str
