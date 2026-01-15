@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .clip-path-circle {
+    clip-path: circle(50% at 50% 50%);
+  }
+}
+
+html, body {
+  font-family: 'Nunito', sans-serif;
+  background-color: #f0fdf4; /* Light green background */
+  overflow-x: hidden;
+}
