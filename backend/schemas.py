@@ -136,3 +136,23 @@ class ChallengeCompletionResponse(BaseModel):
     new_balance: int
     streak_incremented: bool
     new_streak: int
+
+class CommunityFeedSchema(BaseModel):
+    id: int
+    title: str
+    category: str
+    location: str
+    description: str
+    external_link: str
+    created_at: date
+
+    class Config:
+        from_attributes = True
+
+class NGORequestCreate(BaseModel):
+    org_name: str
+    email: str
+    location: str
+    category: str
+    description: str
+    website: str

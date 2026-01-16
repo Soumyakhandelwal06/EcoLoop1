@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Loader2, Leaf, Mic, Volume2, VolumeX } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Leaf, Mic, Volume2, VolumeX, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gameAPI } from '../../services/api';
 
@@ -63,7 +63,7 @@ const ChatBot = () => {
         utterance.lang = 'en-US';
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
-        
+
         // Try to pick a friendly voice (optional)
         const voices = window.speechSynthesis.getVoices();
         const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha'));
@@ -90,7 +90,7 @@ const ChatBot = () => {
     // --- SEND MESSAGE ---
     const handleSend = async (e, overrideText = null) => {
         if (e) e.preventDefault();
-        
+
         const userMsg = overrideText || input;
         if (!userMsg.trim()) return;
 
@@ -102,7 +102,7 @@ const ChatBot = () => {
             const { data } = await gameAPI.chat(userMsg);
             const botResponse = data.response;
             setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
-            
+
             // Speak the response
             speak(botResponse);
 
@@ -135,7 +135,7 @@ const ChatBot = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <button 
+                                <button
                                     onClick={() => {
                                         setVoiceEnabled(!voiceEnabled);
                                         if (voiceEnabled) window.speechSynthesis.cancel();
@@ -155,11 +155,10 @@ const ChatBot = () => {
                         <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                                        msg.role === 'user' 
-                                            ? 'bg-green-600 text-white rounded-br-none' 
-                                            : 'bg-white border border-gray-200 text-gray-700 rounded-bl-none'
-                                    }`}>
+                                    <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                        ? 'bg-green-600 text-white rounded-br-none'
+                                        : 'bg-white border border-gray-200 text-gray-700 rounded-bl-none'
+                                        }`}>
                                         {msg.text}
                                     </div>
                                 </div>
@@ -180,11 +179,10 @@ const ChatBot = () => {
                             <button
                                 type="button"
                                 onClick={toggleListening}
-                                className={`p-3 rounded-full transition-all duration-300 ${
-                                    isListening 
-                                        ? 'bg-red-500 text-white shadow-lg scale-110 animate-pulse' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                className={`p-3 rounded-full transition-all duration-300 ${isListening
+                                    ? 'bg-red-500 text-white shadow-lg scale-110 animate-pulse'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
                                 title="Push to Talk"
                             >
                                 <Mic size={20} />
@@ -197,9 +195,9 @@ const ChatBot = () => {
                                 placeholder={isListening ? "Listening..." : "Ask EcoBot..."}
                                 className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
                             />
-                            
-                            <button 
-                                type="submit" 
+
+                            <button
+                                type="submit"
                                 disabled={loading || !input.trim()}
                                 className="bg-green-600 text-white p-2.5 rounded-full hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95"
                             >
@@ -212,12 +210,36 @@ const ChatBot = () => {
 
             {/* Toggle Button */}
             <motion.button
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-gradient-to-r from-green-500 to-teal-600 text-white p-4 rounded-full shadow-lg hover:shadow-green-500/30 transition-shadow z-50"
+                className={`flex items-center justify-center rounded-full transition-all z-50 relative group
+                    ${isOpen ? 'bg-slate-800 w-14 h-14 shadow-2xl' : 'w-20 h-20 filter drop-shadow-2xl animate-bounce-slow'}
+                `}
             >
-                {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+                {/* Glow Effect (Removed bg color to let image shine) */}
+                {!isOpen && (
+                    <div className="absolute inset-0 rounded-full bg-orange-400 blur-xl opacity-20 group-hover:opacity-40 animate-pulse"></div>
+                )}
+
+                <div className="relative z-10 w-full h-full flex items-center justify-center">
+                    {isOpen ? (
+                        <X size={28} className="text-white" />
+                    ) : (
+                        <img
+                            src="/ecobot_icon.png"
+                            alt="EcoBot"
+                            className="w-full h-full object-contain"
+                        />
+                    )}
+                </div>
+
+                {/* Notification Dot */}
+                {!isOpen && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-md"></span>
+                )}
             </motion.button>
         </div>
     );

@@ -9,8 +9,12 @@ import LevelView from './pages/LevelView';
 import Profile from './pages/Profile';
 import Leaderboard from './pages/Leaderboard';
 import Store from './pages/Store';
+import Community from './pages/Community';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
 import Splash from './pages/Splash';
 import ChatBot from './components/common/ChatBot';
+
 
 function App() {
   const [showSplash, setShowSplash] = React.useState(true);
@@ -41,6 +45,10 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/store" element={<Store />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/about" element={<AboutUs />} />
+                <Route path="/contact" element={<ContactUs />} />
+
 
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
@@ -52,5 +60,6 @@ function App() {
     </GameProvider>
   );
 }
+
 
 export default App;

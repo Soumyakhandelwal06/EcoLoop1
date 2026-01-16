@@ -118,3 +118,28 @@ class UserChallengeCompletion(Base):
 
     user = relationship("User", back_populates="challenge_completions")
     challenge = relationship("Challenge")
+
+class CommunityFeed(Base):
+    __tablename__ = "community_feed"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    category = Column(String) # 'Waste', 'Water', 'Energy', 'Greenery'
+    location = Column(String)
+    description = Column(String)
+    external_link = Column(String)
+    created_at = Column(Date, default=date.today)
+
+class NGORequest(Base):
+    __tablename__ = "ngo_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    org_name = Column(String)
+    email = Column(String)
+    location = Column(String)
+    category = Column(String)
+    description = Column(String)
+    website = Column(String)
+    created_at = Column(Date, default=date.today)
+
+

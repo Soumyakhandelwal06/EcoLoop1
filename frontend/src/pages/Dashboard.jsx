@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 import { Compass, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import Footer from '../components/common/Footer';
+
 const Dashboard = () => {
     return (
-        <div className="min-h-screen bg-[#064e3b] pb-20 overflow-x-hidden selection:bg-green-200">
+        <div className="min-h-screen bg-[#064e3b] pb-20 overflow-x-hidden selection:bg-green-200 flex flex-col">
             <Header />
 
-            <main className="w-full relative">
+            <main className="w-full relative flex-1">
                 {/* Float Controls */}
                 <div className="absolute top-4 left-6 z-50 flex flex-col gap-3">
                     <Link to="/" className="flex items-center gap-2 bg-black/40 hover:bg-black/60 text-white px-5 py-2.5 rounded-2xl backdrop-blur-xl border border-white/10 transition-all active:scale-95 group font-black shadow-2xl">
@@ -42,8 +44,12 @@ const Dashboard = () => {
                 </div>
 
             </main>
+            <div className="z-50 relative bg-white">
+                <Footer />
+            </div>
         </div>
     );
 };
+
 
 export default Dashboard;
