@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Medal, Crown, Flame, Coins, TrendingUp } from 'lucide-react';
+import { Trophy, Medal, Crown, Flame, Coins, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import Header from '../components/common/Header';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Leaderboard = () => {
     const { fetchLeaderboard } = useGame();
+    const navigate = useNavigate();
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -19,7 +21,7 @@ const Leaderboard = () => {
     }, []);
 
     const getRankIcon = (index) => {
-        switch(index) {
+        switch (index) {
             case 0: return <Crown className="w-8 h-8 text-yellow-500" />;
             case 1: return <Medal className="w-7 h-7 text-gray-400" />;
             case 2: return <Medal className="w-6 h-6 text-amber-600" />;
@@ -30,10 +32,19 @@ const Leaderboard = () => {
     return (
         <div className="min-h-screen bg-green-50 pb-20">
             <Header />
-            
+
             <main className="max-w-2xl mx-auto px-4 mt-8">
+                {/* Back to Dashboard Button (From n2) */}
+                <button
+                    onClick={() => navigate('/dashboard')}
+                    className="mb-6 flex items-center gap-2 text-green-700 font-bold hover:text-green-900 transition-colors group"
+                >
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    Back to Dashboard
+                </button>
+
                 <div className="text-center mb-10">
-                    <motion.div 
+                    <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="inline-block p-4 bg-yellow-100 rounded-full mb-4 shadow-lg border-2 border-yellow-200"
@@ -42,7 +53,7 @@ const Leaderboard = () => {
                     </motion.div>
                     <h1 className="text-4xl font-black text-green-900 mb-2">Hall of Fame</h1>
                     <p className="text-green-700 font-bold flex items-center justify-center gap-2">
-                        <TrendingUp size={20}/> Top Eco Warriors Worldwide
+                        <TrendingUp size={20} /> Top Eco Warriors Worldwide
                     </p>
                 </div>
 
@@ -55,7 +66,7 @@ const Leaderboard = () => {
                     ) : (
                         <div className="divide-y divide-gray-50">
                             {players.map((player, index) => (
-                                <motion.div 
+                                <motion.div
                                     key={player.username}
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
@@ -93,7 +104,7 @@ const Leaderboard = () => {
                         </div>
                     )}
                 </div>
-                
+
                 <p className="text-center mt-8 text-green-700/60 font-medium text-sm">
                     Updated every few minutes • Fair Play Enabled
                 </p>

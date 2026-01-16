@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import Header from '../components/common/Header';
 import {
     Award, Droplets, Recycle, Leaf, TrendingUp, Calendar,
-    CheckCircle, XCircle, Clock, ArrowRight, Star, Wallet, Lock, Unlock
+    CheckCircle, XCircle, Clock, ArrowRight, Star, Wallet, Lock, Unlock, ArrowLeft
 } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { useNavigate } from 'react-router-dom';
@@ -129,6 +129,14 @@ const Profile = () => {
             <Header />
 
             <main className="max-w-6xl mx-auto px-4 pt-6 space-y-8">
+                {/* Back to Dashboard Button (From n2) */}
+                <button 
+                    onClick={() => navigate('/dashboard')}
+                    className="mb-2 flex items-center gap-2 text-green-700 font-bold hover:text-green-900 transition-colors group"
+                >
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    Back to Dashboard
+                </button>
 
                 {/* 1. TOP SECTION: Profile Card + Progress + Streak (Grid) */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">

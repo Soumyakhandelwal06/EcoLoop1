@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Leaf, Coins, Flame, LogOut, Trophy, ShoppingBag, Target } from 'lucide-react';
+import { Leaf, Coins, Flame, LogOut, Trophy, ShoppingBag, Target, Camera } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGame } from '../../context/GameContext';
 import StreakCalendar from './StreakCalendar';
 import ChallengesModal from '../gamification/ChallengesModal';
+import ScannerModal from '../scanner/ScannerModal'; // n2 feature
 
 const Header = () => {
     const { user, logout } = useGame();
     const navigate = useNavigate();
     const [showCalendar, setShowCalendar] = useState(false);
     const [isChallengesOpen, setIsChallengesOpen] = useState(false);
+    const [isScannerOpen, setIsScannerOpen] = useState(false); // n2 feature
 
     const handleLogout = () => {
         logout();
@@ -59,10 +61,26 @@ const Header = () => {
                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-bounce shadow-sm"></div>
                             </button>
 
+                            {/* Scanner Trigger (n2 feature) */}
+                            <button
+                                onClick={() => setIsScannerOpen(true)}
+                                className="p-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition shadow-sm ml-1 relative group"
+                                title="AI Eco-Scanner"
+                            >
+                                <Camera className="w-5 h-5" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white animate-pulse shadow-sm"></div>
+                            </button>
+
                             {/* Challenges Modal */}
                             <ChallengesModal
                                 isOpen={isChallengesOpen}
                                 onClose={() => setIsChallengesOpen(false)}
+                            />
+
+                            {/* Scanner Modal (n2 feature) */}
+                            <ScannerModal
+                                isOpen={isScannerOpen}
+                                onClose={() => setIsScannerOpen(false)}
                             />
 
                             {/* Leaderboard Link */}

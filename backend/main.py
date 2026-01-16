@@ -19,8 +19,15 @@ app = FastAPI(title="EcoLoop API")
 
 # CORS (Allow Frontend)
 origins = [
+<<<<<<< HEAD
     "http://localhost:5173", # Vite Dev Server
     "http://localhost:3000",
+=======
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+>>>>>>> origin/n2
 ]
 
 app.add_middleware(
@@ -138,10 +145,13 @@ def update_progress(
     # 1. Update User Coins & Streak
     current_user.coins += progress_data.coins_earned
     
+<<<<<<< HEAD
     # Only update streak if it's a level completion (task verified)
     if progress_data.is_level_completion:
         update_user_streak(current_user, db)
     
+=======
+>>>>>>> origin/n2
     # 2. Check/Update UserProgress for this Level
     user_progress = db.query(models.UserProgress).filter(
         models.UserProgress.user_id == current_user.id,
@@ -250,6 +260,7 @@ async def check_image_quality(
     file: UploadFile = File(...),
     current_user: models.User = Depends(auth.get_current_user)
 ):
+<<<<<<< HEAD
     # This might fail if analyze_image_quality is removed from ai_service. 
     # The user deleted analyze_image_quality in ai_service, so we should probably remove this or mock it.
     # But wait, I kept analyze_image_quality in ai_service in previous step? No, I replaced the file.
@@ -259,6 +270,41 @@ async def check_image_quality(
     # For now, let's return a dummy success to avoid breaking frontend calls if any.
     return {"quality_ok": True, "message": "Quality check bypassed (Optimization)"}
 
+=======
+    return {"quality_ok": True, "message": "Quality check bypassed (Optimization)"}
+
+@app.post("/eco-scanner")
+async def eco_scanner(
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """
+    AI Scanner: Identifies an object, gives eco-advice, and awards coins.
+    """
+    temp_dir = "temp_uploads"
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, f"scan_{current_user.id}_{int(time.time())}_{file.filename}")
+    
+    try:
+        with open(temp_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        result = await ai_service.analyze_eco_object(temp_path, file.content_type)
+        
+        # Award coins if result is valid
+        if "points" in result:
+            current_user.coins += int(result["points"])
+            db.commit()
+            result["new_balance"] = current_user.coins
+            
+        return result
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
+>>>>>>> origin/n2
 # --- Store Endpoints ---
 @app.get("/store/items", response_model=List[schemas.StoreItemSchema])
 def get_store_items(db: Session = Depends(database.get_db)):
@@ -408,6 +454,7 @@ def seed_data(db: Session = Depends(database.get_db)):
 
     # 1. Seed Levels (Upsert)
     levels_data = [
+<<<<<<< HEAD
         {"title": "Sustainability", "description": "Save the world!", "order": 1, "theme_id": "forest", "xp_reward": 100, "video_id": "http://localhost:8000/static/videos/level1.mp4", "task_description": "Take a photo of any single potted plant", "info_content": "Definition: Sustainability is described as a way of living that minimizes environmental damage by understanding how our lifestyle choices impact the world.\n\nSustainable Development: It is defined as development that meets the needs of the present generation without compromising the ability of future generations to meet their own needs.\n\nGoal: The ultimate goal is to \"save the world\" and ensure the health and well-being of the planet for the future."},
         {"title": "Environmental Sustainability", "description": "Keep nature safe.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "http://localhost:8000/static/videos/level2.mp4", "task_description": "Take a photo of you using a reusable water bottle!", "info_content": "Focus: This specific type of sustainability focuses on keeping natural materials safe and protecting the habitats of animals and plants.\n\nActionable Tips:\n\nConserve Water: Turn off taps while brushing or shaving, take shorter showers, and reuse unsalted cooking water for plants.\n\nReduce Plastic: Use less plastic (bags and bottles) to prevent pollution and save energy.\n\nPlanting: Growing your own plants helps prevent harmful chemicals from infecting the environment.\n\nFood Consumption: Take smaller portions to avoid food waste and reduce dependency on food importation."},
         {"title": "Natural Resources", "description": "Mother Nature's supply.", "order": 3, "theme_id": "city", "xp_reward": 200, "video_id": "http://localhost:8000/static/videos/level3.mp4", "task_description": "Take a photo of a recycling bin or segregated waste.", "info_content": "Definition: These are sources of supply or support provided by \"Mother Nature\" that are present on Earth without human activity (e.g., water, forests, air, minerals).\n\nClassification:\n\nRenewable (Inexhaustible): Resources with an unlimited supply that can be used repeatedly, such as sunlight, air, and water (though water can become polluted).\n\nNon-Renewable (Exhaustible): Resources available in limited quantities that take a very long time to replenish, such as coal, petroleum, and natural gas.\n\nConsumption: There is a disparity in consumption; for instance, people in rich countries consume up to 10 times more natural resources than those in poorer countries."},
@@ -476,16 +523,82 @@ def seed_data(db: Session = Depends(database.get_db)):
                     db_q = models.Question(level_id=existing_level.id, **q)
                     db.add(db_q)
 
+=======
+        {"title": "Green Forest", "description": "Save the trees!", "order": 1, "theme_id": "forest", "xp_reward": 100, "video_id": "http://localhost:8000/static/videos/level1.mp4", "task_description": "Find a tree or plant and take a photo to show you appreciate nature!", "info_content": "Forests cover 31% of the land area on our planet. They help people thrive and survive by purifying water and air and providing people with jobs; some 13.2 million people across the world have a job in the forest sector and another 41 million have a job that is related to the sector."},
+        {"title": "Clean River", "description": "Keep waters blue.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "http://localhost:8000/static/videos/level2.mp4", "task_description": "Take a photo of you using a reusable water bottle!", "info_content": "Water pollution occurs when harmful substances—often chemicals or microorganisms—contaminate a stream, river, lake, ocean, aquifer, or other body of water, degrading water quality and rendering it toxic to humans or the environment."},
+        {"title": "Eco City", "description": "Urban sustainability.", "order": 3, "theme_id": "city", "xp_reward": 200, "video_id": "http://localhost:8000/static/videos/level3.mp4", "task_description": "Take a photo of a recycling bin or segregated waste.", "info_content": "Sustainable cities are designed with consideration for the triple bottom line: social, economic, and environmental impact. They are resilient habitats for existing populations, without compromising the ability of future generations to experience the same."},
+        {"title": "Windy Peak", "description": "Renewable energy.", "order": 4, "theme_id": "mountain", "xp_reward": 250, "video_id": "http://localhost:8000/static/videos/level4.mp4", "task_description": "Take a photo of a bicycle or walking path (eco-transport).", "info_content": "Renewable energy is energy that is collected from renewable resources that are naturally replenished on a human timescale. It includes sources such as sunlight, wind, rain, tides, waves, and geothermal heat."},
+        {"title": "Space Station", "description": "Future of earth.", "order": 5, "theme_id": "sky", "xp_reward": 500, "video_id": "http://localhost:8000/static/videos/level5.mp4", "task_description": "Take a clear photo of the sky (aim for clean air!).", "info_content": "Climate change describes a change in the average conditions — such as temperature and rainfall — in a region over a long period of time. NASA scientists have observed Earth’s surface is warming, and many of the warmest years on record have happened in the past 20 years."},
+    ]
+    
+    for l in levels_data:
+        existing_level = db.query(models.Level).filter(models.Level.order == l["order"]).first()
+        if existing_level:
+            # Update existing level (crucial for video_id updates)
+            existing_level.video_id = l["video_id"]
+            existing_level.info_content = l["info_content"]
+            existing_level.task_description = l["task_description"]
+>>>>>>> origin/n2
         else:
             db_level = models.Level(**l)
             db.add(db_level)
             db.flush() # Get ID
             
+<<<<<<< HEAD
             # Add Questions
             if level_questions:
                 for q in level_questions:
                     db_q = models.Question(level_id=db_level.id, **q)
                     db.add(db_q)
+=======
+            # Add Questions only for new levels to avoid duplicates or complexity
+            # (Assuming questions don't change often, or we can add separate logic for them)
+            questions = []
+            if l["theme_id"] == "forest": # Deforestation
+                questions = [
+                   {"text": "What is the primary cause of deforestation mentioned?", "options": "Agriculture|Urbanization|Mining|Tourism", "correct_index": 0, "difficulty": 1},
+                   {"text": "Which gas do trees absorb from the atmosphere?", "options": "Oxygen|Carbon Dioxide|Nitrogen|Helium", "correct_index": 1, "difficulty": 2},
+                   {"text": "What happens to the soil when trees are removed?", "options": "It becomes richer|It erodes easily|It changes color|Nothing", "correct_index": 1, "difficulty": 3},
+                   {"text": "Deforestation leads to the loss of habitat for what percentage of land animals?", "options": "10%|50%|80%|100%", "correct_index": 2, "difficulty": 4},
+                   {"text": "Which strategy was suggested to combat deforestation?", "options": "Buying more paper|Reforestation|Building roads|Ignoring it", "correct_index": 1, "difficulty": 5},
+                ]
+            elif l["theme_id"] == "river": # Water Pollution
+                 questions = [
+                   {"text": "What is the main source of water pollution?", "options": "Fish|Industrial Waste|Rain|Sunlight", "correct_index": 1, "difficulty": 1},
+                   {"text": "Why shouldn't you throw plastic in the river?", "options": "It floats|Animals eat it and die|It looks ugly|It melts", "correct_index": 1, "difficulty": 2},
+                   {"text": "What is 'runoff'?", "options": "Running fast|Water washing chemicals into rivers|A type of boat|A river race", "correct_index": 1, "difficulty": 3},
+                   {"text": "Which percentage of Earth's water is fresh and drinkable?", "options": "75%|50%|2.5%|10%", "correct_index": 2, "difficulty": 4},
+                   {"text": "What can you do at home to save water?", "options": "Leave tap open|Fix leaks|Take long showers|Wash cars daily", "correct_index": 1, "difficulty": 5},
+                ]
+            elif l["theme_id"] == "city": # Sustainable Cities
+                 questions = [
+                   {"text": "What is the 3R rule?", "options": "Run, Rest, Repeat|Reduce, Reuse, Recycle|Read, Write, React|Red, Rose, Ruby", "correct_index": 1, "difficulty": 1},
+                   {"text": "Which bin is usually for recycling?", "options": "Black|Blue/Green|Red|Invisible", "correct_index": 1, "difficulty": 2},
+                   {"text": "What is 'composting'?", "options": "Burning trash|Turning food waste into soil|Throwing food in river|Painting", "correct_index": 1, "difficulty": 3},
+                   {"text": "How do sustainable cities reduce traffic?", "options": "More cars|Public transport & biking|Closing roads|Flying cars", "correct_index": 1, "difficulty": 4},
+                   {"text": "What is a 'vertical garden'?", "options": "Plants on walls|Plants on ceilings|Plants in space|Fake plants", "correct_index": 0, "difficulty": 5},
+                ]
+            elif l["theme_id"] == "mountain": # Renewable Energy
+                 questions = [
+                   {"text": "Which of these is a renewable energy source?", "options": "Coal|Solar|Oil|Gas", "correct_index": 1, "difficulty": 1},
+                   {"text": "What captures energy from the wind?", "options": "Solar Panels|Turbines|Mirrors|Dams", "correct_index": 1, "difficulty": 2},
+                   {"text": "Why are fossil fuels bad for the climate?", "options": "They smell|They release greenhouse gases|They differ in color|They are cold", "correct_index": 1, "difficulty": 3},
+                   {"text": "What energy comes from the Earth's heat?", "options": "Geothermal|Hydro|Biomass|Nuclear", "correct_index": 0, "difficulty": 4},
+                   {"text": "Which country runs almost 100% on renewable energy (example)?", "options": "Iceland|USA|Mars|Atlantis", "correct_index": 0, "difficulty": 5},
+                ]
+            elif l["theme_id"] == "sky": # Climate Change
+                 questions = [
+                   {"text": "What is the 'Greenhouse Effect'?", "options": "Growing plants|Trapping heat in atmosphere|Painting houses green|Cooling the earth", "correct_index": 1, "difficulty": 1},
+                   {"text": "What is the main gas causing global warming?", "options": "Oxygen|Carbon Dioxide|Helium|Neon", "correct_index": 1, "difficulty": 2},
+                   {"text": "Rising sea levels are caused by...", "options": "More rain|Melting ice caps|Too many boats|Fish", "correct_index": 1, "difficulty": 3},
+                   {"text": "What is a 'Carbon Footprint'?", "options": "A dirty shoe|Total greenhouse gas emissions by a person|Coal dust| Graphite", "correct_index": 1, "difficulty": 4},
+                   {"text": "What is the global target limit for warming?", "options": "1.5°C|10°C|50°C|0°C", "correct_index": 0, "difficulty": 5},
+                ]
+
+            for q in questions:
+                db_q = models.Question(level_id=db_level.id, **q)
+                db.add(db_q)
+>>>>>>> origin/n2
     
     messages.append("Levels and Questions seeded/updated.")
 

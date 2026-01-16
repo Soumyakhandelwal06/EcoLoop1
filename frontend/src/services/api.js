@@ -26,9 +26,9 @@ export const authAPI = {
 
 export const gameAPI = {
     getLevels: () => api.get('/levels'),
-    updateProgress: (levelId, coinsEarned, xpEarned) => 
+    updateProgress: (levelId, coinsEarned, xpEarned) =>
         api.post('/users/progress', { level_id: levelId, coins_earned: coinsEarned, xp_earned: xpEarned }),
-    
+
     // Uses the newly added chat endpoint in main.py
     chat: (message) => api.post('/chat', { message }),
 
@@ -36,6 +36,30 @@ export const gameAPI = {
     verifyTask: (formData) => api.post('/verify-task', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
+
+    // n2 features merged below
+    scanEcoObject: async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post('/eco-scanner', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    },
+
+    getChallenges: () => api.get('/challenges'),
+    completeChallenge: (challengeId, file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return api.post(`/challenges/${challengeId}/complete`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+
+    getStoreItems: () => api.get('/store/items'),
+    buyStoreItem: (itemId) => api.post('/store/buy', { item_id: itemId }),
+
+    getLeaderboard: () => api.get('/leaderboard'),
 };
 
 export default api;
