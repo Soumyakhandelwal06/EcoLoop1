@@ -194,7 +194,7 @@ const TaskUpload = ({
 
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:8000/verify-task', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/verify-task`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

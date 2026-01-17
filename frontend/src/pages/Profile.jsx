@@ -99,6 +99,17 @@ const Profile = () => {
         const earned = user.coins + 80; // Fake "spent" amount to make it look active
         const spent = 80;
 
+        // 7. Identity (Level-based)
+        const identities = [
+            "Eco Novice",
+            "Eco Beginner",
+            "Climate Protector",
+            "Nature Champion",
+            "Planet Guardian",
+            "Eco Legend"
+        ];
+        const identity = identities[Math.min(completedCount, identities.length - 1)];
+
         return {
             completedCount,
             totalLevels,
@@ -112,7 +123,8 @@ const Profile = () => {
             nextLevel,
             earned,
             spent,
-            progressMap
+            progressMap,
+            identity
         };
 
     }, [user, levels]);
@@ -121,7 +133,7 @@ const Profile = () => {
 
     const {
         completedCount, totalLevels, completionPercentage, quizzesAttempted, tasksCompleted,
-        streakHistory, feed, badges, nextLevelId, nextLevel, earned, spent, progressMap
+        streakHistory, feed, badges, nextLevelId, nextLevel, earned, spent, progressMap, identity
     } = dashboardData;
 
     return (
@@ -161,7 +173,7 @@ const Profile = () => {
 
                             <div className="text-center sm:text-left flex-1 z-10">
                                 <h1 className="text-3xl font-black text-gray-800 tracking-tight">{user.username}</h1>
-                                <p className="text-green-600 font-bold uppercase tracking-wider text-sm mb-4">{user.coins > 500 ? "Eco Warrior" : "Eco Scout"}</p>
+                                <p className="text-green-600 font-bold uppercase tracking-wider text-sm mb-4">Hero ID: {identity}</p>
 
                                 {/* Progress Bar Container */}
                                 <div className="bg-gray-100 rounded-2xl p-4 w-full max-w-md">

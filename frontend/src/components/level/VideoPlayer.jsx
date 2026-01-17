@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Play, CheckCircle, RotateCcw } from 'lucide-react';
 
 const VideoPlayer = ({ onSegmentComplete, onVideoComplete, levelData, currentSegmentIndex, segmentDuration, isRestarting }) => {
-    // Backend now sends full URL in video_id field
-    const videoUrl = levelData?.video_id || "";
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const videoUrl = levelData?.video_id 
+        ? (levelData.video_id.startsWith('http') ? levelData.video_id : `${backendUrl}${levelData.video_id}`)
+        : "";
     const videoRef = useRef(null);
 
     const [isPlaying, setIsPlaying] = useState(false);

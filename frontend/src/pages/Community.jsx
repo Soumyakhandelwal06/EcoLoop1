@@ -11,7 +11,7 @@ const Community = () => {
     useEffect(() => {
         const fetchFeed = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/community');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/community-feed`);
                 setFeed(res.data);
             } catch (err) {
                 console.error("Failed to fetch community feed", err);

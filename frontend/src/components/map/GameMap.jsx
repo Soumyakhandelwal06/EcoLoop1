@@ -14,7 +14,7 @@ const GameMap = () => {
     // Define levels with thematic zones - adjust Y for longer map
     // Adjusted Level 1 up to 85% to give space for the Start Button at the bottom
     const levels = [
-        { id: 1, x: 50, y: 88, theme: 'forest', label: 'Sustainability' },
+        { id: 1, x: 50, y: 82, theme: 'forest', label: 'Sustainability' },
         { id: 2, x: 20, y: 68, theme: 'river', label: 'Env. Sustainability' },
         { id: 3, x: 80, y: 48, theme: 'city', label: 'Natural Resources' },
         { id: 4, x: 30, y: 28, theme: 'mountain', label: '3 R\'s' },
@@ -234,13 +234,14 @@ const GameMap = () => {
                 ))}
             </div>
 
-            {/* Start Button aligned with Level 1 */}
-            <div
-                onClick={handleStartAdventure}
-                className="absolute transform -translate-x-1/2 bg-white px-8 py-3 rounded-full shadow-[0_0_30px_rgba(34,197,94,0.4)] border-4 border-green-500 text-green-700 font-extrabold text-lg tracking-widest flex items-center gap-2 animate-bounce z-30 hover:scale-105 transition cursor-pointer"
-                style={{ left: '50%', top: '97%' }}
-            >
-                <span>START ADVENTURE</span>
+            {/* Start Button aligned at the bottom center */}
+            <div className="absolute bottom-10 left-0 w-full flex justify-center z-30">
+                <div
+                    onClick={handleStartAdventure}
+                    className="bg-white px-8 py-3 rounded-full shadow-[0_0_30px_rgba(34,197,94,0.4)] border-4 border-green-500 text-green-700 font-extrabold text-lg tracking-widest flex items-center gap-2 animate-bounce hover:scale-105 transition cursor-pointer"
+                >
+                    <span>START ADVENTURE</span>
+                </div>
             </div>
         </div>
     );

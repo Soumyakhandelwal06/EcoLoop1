@@ -26,7 +26,7 @@ const ContactUs = () => {
         e.preventDefault();
         setStatus('submitting');
         try {
-            await axios.post('http://localhost:8000/contact', formData);
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/contact`, formData);
             setStatus('success');
             setFormData({ org_name: '', email: '', location: '', category: 'Greenery', description: '', website: '' });
         } catch (err) {
