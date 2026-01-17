@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Award, Camera } from 'lucide-react';
+import { Leaf, Award, Camera, Mail } from 'lucide-react';
 
 
 
@@ -43,9 +43,9 @@ const Landing = () => {
         </Link>
       </main>
 
-      {/* Features Grid */}
+      {/* Features Grid (4 Columns) */}
       <section className="bg-white/50 backdrop-blur-sm py-16 px-6 mt-12 w-full">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <FeatureCard
             icon={<Leaf className="w-12 h-12 text-green-500" />}
             title="Learn Fun Facts"
@@ -61,18 +61,16 @@ const Landing = () => {
             title="Win Rewards"
             desc="Collect coins and shiny badges for your profile!"
           />
+
+          {/* Contact Us Card */}
+          <Link to="/contact" className="block h-full">
+            <FeatureCard
+              icon={<Mail className="w-12 h-12 text-red-500" />}
+              title="Contact Us"
+              desc="Have questions? We'd love to hear from you! Click here."
+            />
+          </Link>
         </div>
-      </section>
-      <section className="bg-green-600/10 py-16 px-6 w-full text-center">
-        <h2 className="text-3xl font-bold text-green-800 mb-4">Have Questions or Ideas?</h2>
-        <p className="text-lg text-green-700 mb-8 max-w-2xl mx-auto">
-          We'd love to hear from you! Whether you're an NGO looking to partner or an adventurer with a suggestion, get in touch with us.
-        </p>
-        <Link to="/contact">
-          <button className="bg-green-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-green-700 transition shadow-lg hover:shadow-green-200">
-            Contact Us ✉️
-          </button>
-        </Link>
       </section>
 
 
